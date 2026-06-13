@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Micro LM v0.5 - Pixel Creature Edition</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<main class="app">
+    <h1>Micro LM v0.5</h1>
+    <p class="subtitle">Pixel Creature Edition: grow a collectible creature from knowledge.</p>
+
+    <section class="panel">
+        <h2>1. Feed the Creature</h2>
+        <textarea id="dataset" rows="10" placeholder="Example:
+the student studies books
+the student writes notes
+the artist makes strange music
+the teacher praises effort"></textarea>
+        <button id="trainBtn">Hatch Pixel Creature</button>
+    </section>
+
+    <section class="grid">
+        <div class="panel creatureCard">
+            <h2>Pixel Creature</h2>
+            <canvas id="creatureCanvas" width="256" height="256"></canvas>
+            <button id="saveBtn">Save Creature</button>
+            <pre id="creatureStats">No creature hatched yet.</pre>
+        </div>
+
+        <div class="panel">
+            <h2>Creature DNA</h2>
+            <pre id="dnaOutput"></pre>
+        </div>
+    </section>
+
+    <section class="panel">
+        <h2>Ask the Creature</h2>
+        <input id="promptInput" placeholder="Try one or two words, like: the student">
+        <div class="buttonRow">
+            <button id="generateOneBtn">Generate With 1-Word Memory</button>
+            <button id="generateTwoBtn">Generate With 2-Word Memory</button>
+        </div>
+        <pre id="speechOutput"></pre>
+    </section>
+
+    <section class="grid">
+        <div class="panel">
+            <h2>Amoeba Brain</h2>
+            <pre id="oneBrainOutput"></pre>
+        </div>
+
+        <div class="panel">
+            <h2>Worm Brain</h2>
+            <pre id="twoBrainOutput"></pre>
+        </div>
+    </section>
+
+    <section class="panel">
+        <h2>My Creature Collection</h2>
+        <button id="clearCollectionBtn">Clear Collection</button>
+        <pre id="collectionOutput">No saved creatures yet.</pre>
+    </section>
+</main>
+
+<script src="app.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Micro LM v0.3 - Worm Brain</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<main class="app">
+    <h1>Micro LM v0.3</h1>
+    <p class="subtitle">Worm Brain: the creature now remembers two-word patterns.</p>
+
+    <section class="panel">
+        <h2>1. Feed the Creature</h2>
+        <textarea id="dataset" rows="10" placeholder="Example:
+the student studies books
+the student writes notes
+the student reads homework
+the artist makes strange music
+the artist ignores homework
+the teacher praises effort
+the teacher dislikes chaos
+chaos makes strange ideas"></textarea>
+
+        <button id="trainBtn">Train Worm Brain</button>
+    </section>
+
+    <section class="panel">
+        <h2>2. Ask the Creature</h2>
+        <input id="promptInput" placeholder="Try one or two words, like: the student">
+        <div class="buttonRow">
+            <button id="generateOneBtn">Generate With 1-Word Memory</button>
+            <button id="generateTwoBtn">Generate With 2-Word Memory</button>
+        </div>
+    </section>
+
+    <section class="grid">
+        <div class="panel">
+            <h2>Creature</h2>
+            <div id="creature" class="creature">●</div>
+            <pre id="stats"></pre>
+        </div>
+
+        <div class="panel">
+            <h2>Training Lesson</h2>
+            <pre id="lessonOutput">Feed the creature to begin.</pre>
+        </div>
+    </section>
+
+    <section class="grid">
+        <div class="panel">
+            <h2>Amoeba Brain</h2>
+            <p class="small">One-word memory: current word → next word</p>
+            <pre id="oneBrainOutput"></pre>
+        </div>
+
+        <div class="panel">
+            <h2>Worm Brain</h2>
+            <p class="small">Two-word memory: current phrase → next word</p>
+            <pre id="twoBrainOutput"></pre>
+        </div>
+    </section>
+
+    <section class="panel">
+        <h2>Creature Speech</h2>
+        <pre id="speechOutput"></pre>
+    </section>
+
+    <section class="panel guideline">
+        <h2>Guideline Layer</h2>
+        <p>
+            This creature can only remix patterns from the tiny dataset you feed it.
+            If the dataset is tiny, repetitive, chaotic, or biased, the creature's output will be tiny,
+            repetitive, chaotic, or biased too.
+        </p>
+    </section>
+</main>
+
+<script src="app.js"></script>
+
+</body>
+</html>

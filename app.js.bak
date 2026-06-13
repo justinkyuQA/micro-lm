@@ -1,0 +1,239 @@
+let oneWordBrain = {};
+let twoWordBrain = {};
+let words = [];
+let uniqueWords = [];
+
+function cleanText(text) {
+    return text
+        .toLowerCase()
+        .replace(/[^a-z0-9\s]/g, " ")
+        .replace(/\s+/g, " ")
+        .trim();
+}
+
+function buildOneWordBrain(wordList) {
+    const model = {};
+
+    for (let i = 0; i < wordList.length - 1; i++) {
+        const current = wordList[i];
+        const next = wordList[i + 1];
+
+        if (!model[current]) model[current] = {};
+        if (!model[current][next]) model[current][next] = 0;
+
+        model[current][next]++;
+    }
+
+    return model;
+}
+
+function buildTwoWordBrain(wordList) {
+    const model = {};
+
+    for (let i = 0; i < wordList.length - 2; i++) {
+        const phrase = wordList[i] + " " + wordList[i + 1];
+        const next = wordList[i + 2];
+
+        if (!model[phrase]) model[phrase] = {};
+        if (!model[phrase][next]) model[phrase][next] = 0;
+
+        model[phrase][next]++;
+    }
+
+    return model;
+}
+
+function formatBrain(model, limit = 60) {
+    const lines = [];
+
+    for (const key in model) {
+        const nextWords = Object.entries(model[key])
+            .sort((a, b) => b[1] - a[1])
+            .map(([next, count]) => `${next}(${count})`)
+            .join(", ");
+
+        lines.push(`${key} -> ${nextWords}`);
+    }
+
+    return lines.slice(0, limit).join("\n");
+}
+
+function chooseWeighted(options) {
+    const entries = Object.entries(options);
+    const total = entries.reduce((sum, item) => sum + item[1], 0);
+
+    let roll = Math.random() * total;
+
+    for (const [word, count] of entries) {
+        roll -= count;
+        if (roll <= 0) return word;
+    }
+
+    return entries[0][0];
+}
+
+function generateOneWord(prompt, length = 20) {
+    let current = prompt.toLowerCase().trim().split(/\s+/).pop();
+
+    if (!oneWordBrain[current]) {
+        current = uniqueWords[Math.floor(Math.random() * uniqueWords.length)];
+    }
+
+    const output = [current];
+
+    for (let i = 0; i < length; i++) {
+        if (!oneWordBrain[current]) break;
+
+        const next = chooseWeighted(oneWordBrain[current]);
+        output.push(next);
+        current = next;
+    }
+
+    return output.join(" ");
+}
+
+function generateTwoWord(prompt, length = 20) {
+    const promptWords = cleanText(prompt).split(" ").filter(Boolean);
+
+    let output;
+
+    if (promptWords.length >= 2) {
+        output = promptWords.slice(-2);
+    } else if (promptWords.length === 1) {
+        output = [promptWords[0]];
+    } else {
+        output = [words[0], words[1]].filter(Boolean);
+    }
+
+    while (output.length < 2 && words.length > output.length) {
+        output.push(words[output.length]);
+    }
+
+    for (let i = 0; i < length; i++) {
+        const lastTwo = output.slice(-2).join(" ");
+
+        if (twoWordBrain[lastTwo]) {
+            output.push(chooseWeighted(twoWordBrain[lastTwo]));
+            continue;
+        }
+
+        const lastOne = output[output.length - 1];
+
+        if (oneWordBrain[lastOne]) {
+            output.push(chooseWeighted(oneWordBrain[lastOne]));
+            continue;
+        }
+
+        break;
+    }
+
+    return output.join(" ");
+}
+
+function buildStats() {
+    const oneConnections = Object.values(oneWordBrain)
+        .reduce((sum, nextWords) => sum + Object.keys(nextWords).length, 0);
+
+    const twoConnections = Object.values(twoWordBrain)
+        .reduce((sum, nextWords) => sum + Object.keys(nextWords).length, 0);
+
+    let form = "Amoeba";
+
+    if (twoConnections > 5) form = "Worm";
+    if (twoConnections > 20) form = "Segmented Worm";
+    if (twoConnections > 45) form = "Neural Worm";
+
+    return {
+        totalWords: words.length,
+        uniqueWords: uniqueWords.length,
+        oneConnections,
+        twoConnections,
+        form
+    };
+}
+
+function updateCreatureVisual(stats) {
+    const creature = document.getElementById("creature");
+
+    if (stats.twoConnections <= 5) creature.textContent = "●";
+    else if (stats.twoConnections <= 20) creature.textContent = "●●";
+    else if (stats.twoConnections <= 45) creature.textContent = "●●●";
+    else creature.textContent = "●●●●";
+}
+
+function updateLesson(stats) {
+    document.getElementById("lessonOutput").textContent =
+`What changed in v0.3?
+
+v0.2 Amoeba Brain remembered one word at a time:
+student -> studies
+
+v0.3 Worm Brain remembers two-word phrases:
+the student -> studies
+student studies -> books
+
+Why it matters:
+Two-word memory gives the creature a tiny amount of context.
+It is still not intelligent, but it is less random.
+
+Current creature stage:
+${stats.form}`;
+}
+
+document.getElementById("trainBtn").addEventListener("click", () => {
+    const rawText = document.getElementById("dataset").value;
+    const cleaned = cleanText(rawText);
+
+    words = cleaned.length ? cleaned.split(" ") : [];
+    uniqueWords = [...new Set(words)];
+
+    oneWordBrain = buildOneWordBrain(words);
+    twoWordBrain = buildTwoWordBrain(words);
+
+    const stats = buildStats();
+
+    updateCreatureVisual(stats);
+    updateLesson(stats);
+
+    document.getElementById("stats").textContent =
+`Form: ${stats.form}
+Total Words: ${stats.totalWords}
+Unique Words: ${stats.uniqueWords}
+One-Word Connections: ${stats.oneConnections}
+Two-Word Connections: ${stats.twoConnections}`;
+
+    document.getElementById("oneBrainOutput").textContent =
+        formatBrain(oneWordBrain) || "No one-word brain yet.";
+
+    document.getElementById("twoBrainOutput").textContent =
+        formatBrain(twoWordBrain) || "No two-word brain yet.";
+
+    document.getElementById("speechOutput").textContent =
+        "Worm Brain trained. Try generating with one-word memory, then two-word memory.";
+});
+
+document.getElementById("generateOneBtn").addEventListener("click", () => {
+    if (uniqueWords.length === 0) {
+        document.getElementById("speechOutput").textContent =
+            "The creature has not been trained yet.";
+        return;
+    }
+
+    const prompt = document.getElementById("promptInput").value || uniqueWords[0];
+
+    document.getElementById("speechOutput").textContent =
+        "1-word memory:\n" + generateOneWord(prompt);
+});
+
+document.getElementById("generateTwoBtn").addEventListener("click", () => {
+    if (uniqueWords.length === 0) {
+        document.getElementById("speechOutput").textContent =
+            "The creature has not been trained yet.";
+        return;
+    }
+
+    const prompt = document.getElementById("promptInput").value || words.slice(0, 2).join(" ");
+
+    document.getElementById("speechOutput").textContent =
+        "2-word memory:\n" + generateTwoWord(prompt);
+});
