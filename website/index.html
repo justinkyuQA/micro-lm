@@ -1,0 +1,65 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>micro-lm-v0.5</title>
+<style>
+body {
+  background:#080c09;
+  color:#dfffe6;
+  font-family:monospace;
+  padding:2rem;
+  line-height:1.5;
+}
+.card {
+  border:1px solid #39ff88;
+  padding:1rem;
+  margin:1rem 0;
+}
+button {
+  background:#111;
+  color:#dfffe6;
+  border:1px solid #39ff88;
+  padding:.6rem 1rem;
+}
+pre { white-space:pre-wrap; }
+</style>
+</head>
+<body>
+<h1>micro-lm-v0.5</h1>
+<p>Browser demo for this local-first project.</p>
+
+<div class="card">
+<h2>Demo Mode</h2>
+<button onclick="demo()">Run Demo</button>
+<pre id="out"></pre>
+</div>
+
+<div class="card">
+<h2>Modes</h2>
+<p>Demo → Run Locally → Export</p>
+</div>
+
+<script>
+const lines = [
+"Starting demo...",
+"Loading sample data...",
+"Inspecting project...",
+"Running workflow...",
+"Generating output...",
+"Demo complete."
+];
+
+function demo() {
+  let out = document.getElementById("out");
+  out.textContent = "";
+  let i = 0;
+  let timer = setInterval(() => {
+    out.textContent += lines[i] + "\n";
+    i++;
+    if (i >= lines.length) clearInterval(timer);
+  }, 450);
+}
+</script>
+</body>
+</html>
